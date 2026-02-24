@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <files-path name="internal_files" path="." />
+    <cache-path name="cache" path="." />
+    <external-files-path name="external_files" path="." />
+    <external-cache-path name="external_cache" path="." />
+    <files-path name="avatars" path="avatars/" />
+    <files-path name="characters" path="characters/" />
+    <files-path name="world_info" path="world_info/" />
+    <files-path name="presets" path="presets/" />
+    <files-path name="exports" path="exports/" />
+</paths>

@@ -3,13 +3,12 @@ package com.sillytavern.android.util
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.sillytavern.android.data.model.CharacterCardV2
 import com.sillytavern.android.data.model.CharacterCardV3
 import com.sillytavern.android.data.model.CharacterData
 import com.sillytavern.android.data.model.CharacterDataExtended
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.jsonObject
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
@@ -26,11 +25,7 @@ object CharacterCardParser {
     private const val CHUNK_TEXT = "tEXt"
     private const val CHUNK_IEND = "IEND"
     
-    private val json = Json {
-        ignoreUnknownKeys = true
-        isLenient = true
-        coerceInputValues = true
-    }
+    private val gson = Gson()
     
     data class PngChunk(
         val type: String,
@@ -70,15 +65,17 @@ object CharacterCardParser {
     
     fun parseCharacterJson(jsonString: String): CharacterDataExtended {
         return try {
-            val jsonElement: JsonElement = kotlinx.serialization.json.Json.parseToJsonElement(jsonString)
-            val spec = jsonElement.jsonObject["spec"]?.jsonPrimitive?.content
+            val jsonObject = gson.fromJson(jsonString, JsonObject::class.java)
+            val spec = if (jsonObject.has("spec")) jsonObject.get("spec").asString else null
             
             when (spec) {
                 "chara_card_v3" -> {
-                    json.decodeFromString<CharacterCardV3>(jsonString).data
+                    val v3 = gson.fromJson(jsonString, CharacterCardV3::class.java)
+                    v3.data
                 }
                 "chara_card_v2" -> {
-                    val v2Data = json.decodeFromString<CharacterCardV2>(jsonString).data
+                    val v2 = gson.fromJson(jsonString, CharacterCardV2::class.java)
+                    val v2Data = v2.data
                     CharacterDataExtended(
                         name = v2Data.name,
                         description = v2Data.description,
@@ -98,7 +95,7 @@ object CharacterCardParser {
                     )
                 }
                 else -> {
-                    val legacyData = json.decodeFromString<CharacterData>(jsonString)
+                    val legacyData = gson.fromJson(jsonString, CharacterData::class.java)
                     CharacterDataExtended(
                         name = legacyData.name,
                         description = legacyData.description,

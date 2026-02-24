@@ -69,7 +69,7 @@ object CharacterCardParser {
     fun parseCharacterJson(jsonString: String): CharacterDataExtended {
         return try {
             val jsonElement = kotlinx.serialization.json.Json.parseToJsonElement(jsonString)
-            val spec = jsonElement.jsonObject?.get("spec")?.jsonPrimitive?.content
+            val spec = jsonElement.jsonObject["spec"]?.jsonPrimitive?.content
             
             when (spec) {
                 "chara_card_v3" -> {

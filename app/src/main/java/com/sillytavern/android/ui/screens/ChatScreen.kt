@@ -196,9 +196,10 @@ fun ChatScreen(
                                 message = MessageEntity(
                                     id = -1,
                                     chatId = 0,
-                                    message = streamingText,
+                                    name = character?.name ?: "Assistant",
                                     isUser = false,
-                                    timestamp = System.currentTimeMillis()
+                                    sendDate = System.currentTimeMillis(),
+                                    message = streamingText
                                 ),
                                 characterName = character?.name ?: "Assistant"
                             )

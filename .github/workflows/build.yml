@@ -19,8 +19,14 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '2.10.5'
+          flutter-version: '3.7.0'
           channel: 'stable'
+      
+      - name: Create Flutter project
+        run: |
+          cd /tmp
+          flutter create --org com.sillytavern --project-name sillytavern temp_app
+          cp -r temp_app/android/. ./android/
       
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > android/local.properties

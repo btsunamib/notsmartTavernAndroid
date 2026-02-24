@@ -30,10 +30,9 @@ jobs:
       
       - name: Build Debug APK
         run: |
-          export JAVA_HOME=$JAVA_HOME_17
+          chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
-        shell: bash
-      
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:

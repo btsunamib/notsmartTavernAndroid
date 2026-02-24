@@ -28,11 +28,11 @@ jobs:
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
       
-      - name: Setup Gradle
-        uses: gradle/gradle-actions/setup-gradle@v2
-      
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          export JAVA_HOME=$JAVA_HOME_17
+          ./gradlew assembleDebug --no-daemon
+        shell: bash
       
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4

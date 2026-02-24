@@ -1,6 +1,6 @@
 # SillyTavern Android
 
-一个完整还原SillyTavern功能的Android应用程序，支持Android 8.0及以上系统版本。
+Android应用程序，支持Android 8.0及以上系统版本。
 
 ## 功能特性
 

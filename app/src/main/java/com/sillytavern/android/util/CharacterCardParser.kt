@@ -8,6 +8,8 @@ import com.sillytavern.android.data.model.CharacterCardV3
 import com.sillytavern.android.data.model.CharacterData
 import com.sillytavern.android.data.model.CharacterDataExtended
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.jsonObject
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import java.nio.ByteBuffer
@@ -68,7 +70,7 @@ object CharacterCardParser {
     
     fun parseCharacterJson(jsonString: String): CharacterDataExtended {
         return try {
-            val jsonElement = kotlinx.serialization.json.Json.parseToJsonElement(jsonString)
+            val jsonElement: JsonElement = kotlinx.serialization.json.Json.parseToJsonElement(jsonString)
             val spec = jsonElement.jsonObject["spec"]?.jsonPrimitive?.content
             
             when (spec) {

@@ -1,8 +1,9 @@
 package com.sillytavern.android.data.local.entity
 
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.sillytavern.android.data.model.WorldInfo
 import com.sillytavern.android.data.model.WorldInfoEntry
 
 @Entity(tableName = "world_info")
@@ -37,7 +38,7 @@ data class WorldInfoEntity(
             onDelete = ForeignKey.CASCADE
         )
     ],
-    indices = [androidx.room.Index(value = ["worldInfoId"])]
+    indices = [Index(value = ["worldInfoId"])]
 )
 data class WorldInfoEntryEntity(
     @PrimaryKey(autoGenerate = true)
@@ -73,75 +74,4 @@ data class WorldInfoEntryEntity(
     val sticky: Int = 0,
     val cooldown: Int = 0,
     val delay: Int = 0
-) {
-    fun toWorldInfoEntry(): WorldInfoEntry {
-        return WorldInfoEntry(
-            keys = if (keys.isNotEmpty()) keys.split(",") else emptyList(),
-            content = content,
-            enabled = enabled,
-            insertionOrder = insertionOrder,
-            caseSensitive = caseSensitive,
-            name = name,
-            priority = priority,
-            id = entryId,
-            comment = comment,
-            selective = selective,
-            secondaryKeys = if (secondaryKeys.isNotEmpty()) secondaryKeys.split(",") else emptyList(),
-            constant = constant,
-            position = position,
-            depth = depth,
-            group = group,
-            groupOverlap = groupOverlap,
-            groupWeight = groupWeight,
-            useProbability = useProbability,
-            probability = probability,
-            displayIndex = displayIndex,
-            excludeRecursion = excludeRecursion,
-            preventRecursion = preventRecursion,
-            delayUntilRecursion = delayUntilRecursion,
-            scanDepth = scanDepth,
-            matchWholeWords = matchWholeWords,
-            vectorized = vectorized,
-            sticky = sticky,
-            cooldown = cooldown,
-            delay = delay
-        )
-    }
-    
-    companion object {
-        fun fromWorldInfoEntry(worldInfoId: Long, entry: WorldInfoEntry): WorldInfoEntryEntity {
-            return WorldInfoEntryEntity(
-                worldInfoId = worldInfoId,
-                entryId = entry.id,
-                keys = entry.keys.joinToString(","),
-                content = entry.content,
-                enabled = entry.enabled,
-                insertionOrder = entry.insertionOrder,
-                caseSensitive = entry.caseSensitive,
-                name = entry.name,
-                priority = entry.priority,
-                comment = entry.comment,
-                selective = entry.selective,
-                secondaryKeys = entry.secondaryKeys.joinToString(","),
-                constant = entry.constant,
-                position = entry.position,
-                depth = entry.depth,
-                group = entry.group,
-                groupOverlap = entry.groupOverlap,
-                groupWeight = entry.groupWeight,
-                useProbability = entry.useProbability,
-                probability = entry.probability,
-                displayIndex = entry.displayIndex,
-                excludeRecursion = entry.excludeRecursion,
-                preventRecursion = entry.preventRecursion,
-                delayUntilRecursion = entry.delayUntilRecursion,
-                scanDepth = entry.scanDepth,
-                matchWholeWords = entry.matchWholeWords,
-                vectorized = entry.vectorized,
-                sticky = entry.sticky,
-                cooldown = entry.cooldown,
-                delay = entry.delay
-            )
-        }
-    }
-}
+)

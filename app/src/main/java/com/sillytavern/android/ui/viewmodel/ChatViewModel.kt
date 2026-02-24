@@ -111,7 +111,9 @@ class ChatViewModel @Inject constructor(
                         _streamingText.value += token
                     },
                     onComplete = {
-                        saveAssistantMessage(_streamingText.value, character.name)
+                        viewModelScope.launch {
+                            saveAssistantMessage(_streamingText.value, character.name)
+                        }
                         _isGenerating.value = false
                         _streamingText.value = ""
                     },

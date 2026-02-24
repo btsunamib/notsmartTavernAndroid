@@ -8,10 +8,8 @@ import com.sillytavern.android.data.local.entity.WorldInfoEntity
 import com.sillytavern.android.data.local.entity.WorldInfoEntryEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,21 +22,18 @@ class WorldInfoViewModel @Inject constructor(
     private val _worldInfo = MutableStateFlow<WorldInfoEntity?>(null)
     val worldInfo: StateFlow<WorldInfoEntity?> = _worldInfo.asStateFlow()
     
-    private var currentWorldInfoId: Long = 0
+    private val _entries = MutableStateFlow<List<WorldInfoEntryEntity>>(emptyList())
+    val entries: StateFlow<List<WorldInfoEntryEntity>> = _entries.asStateFlow()
     
-    val entries: StateFlow<List<WorldInfoEntryEntity>> = MutableStateFlow(emptyList())
-        .also { flow ->
-            viewModelScope.launch {
-                worldInfoEntryDao.getEntriesForWorldInfo(currentWorldInfoId).collect { entries ->
-                    flow.value = entries
-                }
-            }
-        }
+    private var currentWorldInfoId: Long = 0
     
     fun loadWorldInfo(worldInfoId: Long) {
         currentWorldInfoId = worldInfoId
         viewModelScope.launch {
             _worldInfo.value = worldInfoDao.getWorldInfoById(worldInfoId)
+            worldInfoEntryDao.getEntriesForWorldInfo(worldInfoId).collect { entriesList ->
+                _entries.value = entriesList
+            }
         }
     }
     

@@ -1,9 +1,10 @@
 package com.sillytavern.android.data.remote
 
 import com.sillytavern.android.data.model.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.sse.EventSource
 import okhttp3.sse.EventSourceListener
 import okhttp3.sse.EventSources
@@ -35,12 +36,11 @@ interface ClaudeApiService {
     }
     
     @POST("v1/messages")
-    @Headers("Content-Type: application/json")
     suspend fun createMessage(
         @Header("x-api-key") apiKey: String,
         @Header("anthropic-version") version: String = "2023-06-01",
-        @Body request: ClaudeRequest
-    ): ClaudeResponse
+        @Body request: Map<String, Any>
+    ): Map<String, Any>
 }
 
 interface KoboldApiService {
@@ -56,7 +56,6 @@ interface KoboldApiService {
     }
     
     @POST("api/v1/generate")
-    @Headers("Content-Type: application/json")
     suspend fun generate(@Body request: KoboldRequest): KoboldResponse
     
     @GET("api/v1/model")
@@ -84,10 +83,10 @@ class ApiService(
     
     suspend fun claudeCreateMessage(
         apiKey: String,
-        request: ClaudeRequest
-    ): Result<ClaudeResponse> {
+        request: Map<String, Any>
+    ): Result<Map<String, Any>> {
         return try {
-            Result.success(claudeApiService.createMessage(apiKey, request))
+            Result.success(claudeApiService.createMessage(apiKey, request = request))
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -114,12 +113,10 @@ class ApiService(
         onError: (Throwable) -> Unit
     ): EventSource {
         val eventSourceFactory = EventSources.createFactory(client)
-        val requestBody = okhttp3.RequestBody.create(
-            okhttp3.MediaType.parse("application/json"),
-            com.google.gson.Gson().toJson(request)
-        )
+        val requestBody = com.google.gson.Gson().toJson(request)
+            .toRequestBody("application/json".toMediaType())
         
-        val httpRequest = okhttp3.Request.Builder()
+        val httpRequest = Request.Builder()
             .url(url)
             .header("Authorization", "Bearer $apiKey")
             .header("Content-Type", "application/json")
@@ -147,7 +144,6 @@ class ApiService(
                         onToken(content)
                     }
                 } catch (e: Exception) {
-                    // Ignore parsing errors for incomplete JSON
                 }
             }
             

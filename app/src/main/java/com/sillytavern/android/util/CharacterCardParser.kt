@@ -15,7 +15,7 @@ import java.nio.ByteOrder
 import java.util.zip.CRC32
 
 object CharacterCardParser {
-    private const val PNG_SIGNATURE = byteArrayOf(
+    private val PNG_SIGNATURE = byteArrayOf(
         0x89.toByte(), 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A
     )
     
@@ -69,7 +69,7 @@ object CharacterCardParser {
     fun parseCharacterJson(jsonString: String): CharacterDataExtended {
         return try {
             val jsonObject = kotlinx.serialization.json.Json.parseToJsonElement(jsonString)
-            val spec = jsonObject.jsonObject["spec"]?.jsonPrimitive?.content
+            val spec = jsonObject.jsonObject?.get("spec")?.jsonPrimitive?.content
             
             when (spec) {
                 "chara_card_v3" -> {
@@ -188,67 +188,6 @@ object CharacterCardParser {
         }
         
         return outputStream.toByteArray()
-    }
-    
-    fun writeCharacterCard(
-        imageData: ByteArray,
-        characterData: CharacterDataExtended
-    ): ByteArray {
-        val chunks = extractChunks(imageData.inputStream())
-        
-        val filteredChunks = chunks.filterNot { chunk ->
-            chunk.type == CHUNK_TEXT && run {
-                val (keyword, _) = extractKeyword(chunk.data)
-                keyword.equals(CHUNK_CHARA, ignoreCase = true) || 
-                keyword.equals(CHUNK_CCV3, ignoreCase = true)
-            }
-        }.toMutableList()
-        
-        val v2Json = json.encodeToString(
-            CharacterCardV2.serializer(),
-            CharacterCardV2(
-                spec = "chara_card_v2",
-                specVersion = "2.0",
-                data = CharacterData(
-                    name = characterData.name,
-                    description = characterData.description,
-                    personality = characterData.personality,
-                    scenario = characterData.scenario,
-                    firstMes = characterData.firstMes,
-                    mesExample = characterData.mesExample,
-                    creatorNotes = characterData.creatorNotes,
-                    systemPrompt = characterData.systemPrompt,
-                    postHistoryInstructions = characterData.postHistoryInstructions,
-                    alternateGreetings = characterData.alternateGreetings,
-                    characterBook = characterData.characterBook,
-                    tags = characterData.tags,
-                    creator = characterData.creator,
-                    characterVersion = characterData.characterVersion,
-                    extensions = characterData.extensions
-                )
-            )
-        )
-        
-        val v3Json = json.encodeToString(
-            CharacterCardV3.serializer(),
-            CharacterCardV3(
-                spec = "chara_card_v3",
-                specVersion = "3.0",
-                data = characterData
-            )
-        )
-        
-        val v2Base64 = Base64.encodeToString(v2Json.toByteArray(Charsets.UTF_8), Base64.DEFAULT)
-        val v3Base64 = Base64.encodeToString(v3Json.toByteArray(Charsets.UTF_8), Base64.DEFAULT)
-        
-        val v2ChunkData = (CHUNK_CHARA + "\u0000" + v2Base64).toByteArray(Charsets.ISO_8859_1)
-        val v3ChunkData = (CHUNK_CCV3 + "\u0000" + v3Base64).toByteArray(Charsets.ISO_8859_1)
-        
-        val insertIndex = filteredChunks.indexOfLast { it.type != CHUNK_IEND } + 1
-        filteredChunks.add(insertIndex, PngChunk(CHUNK_TEXT, v2ChunkData))
-        filteredChunks.add(insertIndex + 1, PngChunk(CHUNK_TEXT, v3ChunkData))
-        
-        return extractImageData(filteredChunks)
     }
     
     data class ParseResult(

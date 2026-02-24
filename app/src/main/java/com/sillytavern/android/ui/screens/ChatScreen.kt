@@ -20,7 +20,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sillytavern.android.data.local.entity.MessageEntity
 import com.sillytavern.android.ui.viewmodel.ChatViewModel
 import com.sillytavern.android.ui.components.MarkdownText
-import com.sillytavern.android.ui.components.StreamingMessage
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,8 +192,14 @@ fun ChatScreen(
                     
                     if (isGenerating && streamingText.isNotEmpty()) {
                         item {
-                            StreamingMessage(
-                                text = streamingText,
+                            MessageBubble(
+                                message = MessageEntity(
+                                    id = -1,
+                                    chatId = 0,
+                                    message = streamingText,
+                                    isUser = false,
+                                    timestamp = System.currentTimeMillis()
+                                ),
                                 characterName = character?.name ?: "Assistant"
                             )
                         }

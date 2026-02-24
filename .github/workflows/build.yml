@@ -24,6 +24,7 @@ jobs:
       
       - name: Create Flutter project
         run: |
+          rm -rf android/
           flutter create --org com.sillytavern --project-name sillytavern temp_app
           cp -r temp_app/android/. ./
           rm -rf temp_app/

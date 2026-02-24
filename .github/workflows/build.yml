@@ -28,10 +28,18 @@ jobs:
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > local.properties
       
+      - name: Download and setup Gradle
+        run: |
+          cd /tmp
+          curl -L -o gradle.zip https://services.gradle.org/distributions/gradle-7.6.3-bin.zip
+          unzip -q gradle.zip
+          export PATH="/tmp/gradle-7.6.3/bin:$PATH"
+          gradle --version
+      
       - name: Build Debug APK
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          export PATH="/tmp/gradle-7.6.3/bin:$PATH"
+          gradle assembleDebug --no-daemon -p .
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4

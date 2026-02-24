@@ -16,9 +16,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       
-      - name: Remove old android folder
-        run: rm -rf android/
-      
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -27,9 +24,9 @@ jobs:
       
       - name: Create Flutter project
         run: |
-          cd /tmp
           flutter create --org com.sillytavern --project-name sillytavern temp_app
-          cp -r temp_app/android/. ${{ github.workspace }}/
+          cp -r temp_app/android/. ./
+          rm -rf temp_app/
       
       - name: Create local.properties
         run: echo "sdk.dir=$ANDROID_HOME" > android/local.properties

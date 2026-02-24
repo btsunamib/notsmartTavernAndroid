@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
-import 'screens/chat_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/characters_screen.dart';
 import 'screens/world_info_screen.dart';
@@ -40,7 +39,6 @@ class SillyTavernApp extends StatelessWidget {
         ),
         home: const HomeScreen(),
         routes: {
-          '/chat': (context) => const ChatScreen(),
           '/settings': (context) => const SettingsScreen(),
           '/characters': (context) => const CharactersScreen(),
           '/worldinfo': (context) => const WorldInfoScreen(),
